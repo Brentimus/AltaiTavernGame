@@ -78,6 +78,11 @@
                 canvas.style.background = 'linear-gradient(to right, white, white ' + percent + ', transparent ' + percent + ', transparent) no-repeat center';
                 canvas.style.backgroundSize = '100% 1rem';
             }
+
+            function isLandscape() {
+                return ['landscape-primary', 'landscape-secondary'].includes(screen.orientation.type)
+            }
+
             function onResize() {
                 var container = canvas.parentElement;
                 var w;
@@ -97,27 +102,44 @@
                     w = 1280;
                     h = 720;
                 }
-
                 container.style.width = canvas.style.width = w + "px";
                 container.style.height = canvas.style.height = h + "px";
                 container.style.top = Math.floor((window.innerHeight - h) / 2) + "px";
                 container.style.left = Math.floor((window.innerWidth - w) / 2) + "px";
             }
-            createUnityInstance(canvas, config, progressHandler).then(function (instance) {
-                canvas = instance.Module.canvas;
-                onResize();
-            });
+            // createUnityInstance(canvas, config, progressHandler).then(function (instance) {
+            //     canvas = instance.Module.canvas;
+            //     onResize();
+            // });
             window.addEventListener('resize', onResize);
             onResize();
 
             var fullscreenButton = document.getElementById('fullscreenButton');
             var canvasContainer = document.getElementById('gameContainer');
             var isFullscreen = false;
+            var Unityinstance;
 
             fullscreenButton.addEventListener('click', function () {
                 if (!isFullscreen) {
+
                     if (canvas.requestFullscreen) {
-                        canvas.requestFullscreen();
+                        canvas.requestFullscreen().then(() => {
+                            if (Unityinstance) {
+                                Unityinstance.Module.resumeMainLoop()
+                            }
+                            else {
+                                if ("lock" in screen.orientation) {
+                                    screen.orientation.lock('landscape').finally(() => {
+                                        createUnityInstance(canvas, config, progressHandler).then(function (instance) {
+                                            canvas = instance.Module.canvas;
+                                            onResize();
+                                            Unityinstance = instance;
+
+                                        });
+                                    });
+                                }
+                            }
+                        })
                     } else if (canvas.webkitRequestFullscreen) { /* Safari */
                         canvas.webkitRequestFullscreen();
                     } else if (canvas.msRequestFullscreen) { /* IE11 */
@@ -125,6 +147,7 @@
                     }
                     fullscreenButton.style.display = 'none';
                     isFullscreen = true;
+
                 }
             });
 
@@ -136,6 +159,7 @@
             function exitHandler() {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
                     fullscreenButton.style.display = 'block';
+                    Unityinstance.Module.pauseMainLoop()
                     isFullscreen = false;
                 }
             }
