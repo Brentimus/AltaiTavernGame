@@ -99,15 +99,15 @@
                     w = window.innerWidth;
                     h = window.innerHeight;
 
-                    var r = 720 / 1280;
+                    var r = 100 / 200;
 
                     if (w * r > window.innerHeight) {
                         w = Math.min(w, Math.ceil(h / r));
                     }
                     h = Math.floor(w * r);
                 } else {
-                    w = 1280;
-                    h = 720;
+                    w = 200;
+                    h = 100;
                 }
 
                 container.style.width = canvas.style.width = w + "px";
@@ -149,7 +149,7 @@
                             }
                         })
                     } else if (canvas.webkitRequestFullscreen) { /* Safari */
-                        if (canvas.requestFullscreen) {
+                        
                             canvas.webkitRequestFullscreen().then(() => {
 
                             if ("lock" in screen.orientation) {
@@ -168,12 +168,11 @@
 
                                 });
                             }
-                        })}
+                        })
                             
                     } else if (canvas.msRequestFullscreen) { /* IE11 */
-                        canvas.msRequestFullscreen();
-
-                        if (canvas.requestFullscreen) {
+                        
+                        
                             canvas.msRequestFullscreen().then(() => {
 
                             if ("lock" in screen.orientation) {
@@ -192,7 +191,7 @@
 
                                 });
                             }
-                        })}
+                        })
                             
                     }
                     fullscreenButton.style.display = 'none';
