@@ -210,7 +210,6 @@
             function exitHandler() {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
                     fullscreenButton.style.display = 'block';
-                    screen.orientation.lock('portrait')
                     Unityinstance.Module.pauseMainLoop()
                     isFullscreen = false;
                     blackScreen.style.display = 'block';
