@@ -149,9 +149,51 @@
                             }
                         })
                     } else if (canvas.webkitRequestFullscreen) { /* Safari */
-                        canvas.webkitRequestFullscreen();
+                        if (canvas.requestFullscreen) {
+                            canvas.webkitRequestFullscreen().then(() => {
+
+                            if ("lock" in screen.orientation) {
+                                screen.orientation.lock('landscape').finally(() => {
+                                    if (Unityinstance) {
+                                        Unityinstance.Module.resumeMainLoop()
+                                    }
+                                    else {
+                                        createUnityInstance(canvas, config, progressHandler).then(function (instance) {
+                                            canvas = instance.Module.canvas;
+                                            onResize();
+                                            Unityinstance = instance;
+
+                                        });
+                                    }
+
+                                });
+                            }
+                        })}
+                            
                     } else if (canvas.msRequestFullscreen) { /* IE11 */
                         canvas.msRequestFullscreen();
+
+                        if (canvas.requestFullscreen) {
+                            canvas.msRequestFullscreen().then(() => {
+
+                            if ("lock" in screen.orientation) {
+                                screen.orientation.lock('landscape').finally(() => {
+                                    if (Unityinstance) {
+                                        Unityinstance.Module.resumeMainLoop()
+                                    }
+                                    else {
+                                        createUnityInstance(canvas, config, progressHandler).then(function (instance) {
+                                            canvas = instance.Module.canvas;
+                                            onResize();
+                                            Unityinstance = instance;
+
+                                        });
+                                    }
+
+                                });
+                            }
+                        })}
+                            
                     }
                     fullscreenButton.style.display = 'none';
                     blackScreen.style.display = 'none';
@@ -168,6 +210,7 @@
             function exitHandler() {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
                     fullscreenButton.style.display = 'block';
+                    screen.orientation.lock('portrait')
                     Unityinstance.Module.pauseMainLoop()
                     isFullscreen = false;
                     blackScreen.style.display = 'block';
